@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <!-- SCROLLS -->
+  <meta name="viewport"
+	content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" 
+  	integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" />
+
+  <!-- SPELLS -->
+  <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" 
+  	integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" 
+	integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" 
+	integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
+</head>
+
+<!-- define angular controller -->
+<body class="container">
+<div data-ng-app="repoApp" data-ng-controller="repoController">
+
+<div class="card border-primary mb-4">
+  <div class="card-header bg-primary">
+    Git Repo Search Filter
+  </div>
+  <div class="card-body">
+   <nav class="navbar navbar-light bg-light">
+	  <form class="form-inline"  data-ng-submit="searchRepo(searchStr)" >
+	    <input class="form-control mr-sm-2" data-ng-model= "searchStr" type="search" placeholder="Search" aria-label="Search">
+	    <button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>
+	  </form>
+  </nav>
+  </div>
+</div>
+<div class="card border-primary">
+  <div class="card-header bg-primary">
+    Repo Results
+  </div>
+  <div class="card-body">
+   	<div class="row" data-ng-if="searchedResult.length > 0">
+   		<div class="col-lg-3 col-md-4 col-sm-6" data-ng-repeat="res in searchedResult">
+		  <div class="card">
+		    <img data-ng-src="{{res.owner.avatar_url}}" class="card-img-top" alt="No Image">
+		    <div class="card-body">
+		      <h5 class="card-title text-center">{{res.name}}</h5>
+		      <div></div>
+		      <p class="card-text text-muted">{{res.description}}</p>
+		    </div>
+		    <div class="card-footer text-center">
+		      <small class="text-muted">VIEW PROFILE</small>
+		    </div>
+		  </div>
+	 	</div>
+	 </div>
+  </div>
+</div>
+  <div id="main">
+    <div data-ng-view ></div>
+  </div>
+ </div>
+  <script>
+  var app = angular.module("repoApp", []);
+  app.controller("repoController", function($scope ,$http) {
+	  $scope.searchedResult = new Array();
+	  $scope.searchRepo = function(searchStr){
+		  $http({
+				method : 'GET',
+				url : 'https://api.github.com/search/repositories?q='+ searchStr
+			})
+			.then(
+					function successCallback (response){
+						if(response && response.data.total_count > 0){
+							$scope.searchedResult = response.data.items
+						} else {
+							console.log("No item fount");
+						}
+					},
+					function errorCallback(response){
+						alert("something went wrong");
+				})
+	  }
+ });
+  </script>
+  
+</body>
+
+
+</html>
